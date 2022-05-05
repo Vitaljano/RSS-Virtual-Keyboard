@@ -1,0 +1,5 @@
+@font-face {
+  font-family: 'Legends';
+  src: url('../css/fonts/legends.eot');
+  src: url('../css/fonts/legends.woff') format('woff'), url('../css/fonts/legends.svg') format('svg');
+}
