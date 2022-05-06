@@ -1,4 +1,4 @@
-import Keyboard from './Keyboard.js';
+import Keyboard from './Keyboard';
 
 const keyRow = [
   [
@@ -68,4 +68,4 @@ const keyRow = [
   ['ControlLeft', 'Win', 'AltLeft', 'Space', 'AltRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ControlRight'],
 ];
 
-const KeyBoard = new Keyboard(keyRow).init('en');
+new Keyboard(keyRow).init('en');

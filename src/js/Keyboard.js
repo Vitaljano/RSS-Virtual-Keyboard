@@ -1,6 +1,7 @@
-import create from './utils/create.js';
-import Key from './Key.js';
-import language from './layouts/index.js';
+import create from './utils/create';
+import Key from './Key';
+import language from './layouts/index';
+import letterToUpperCase from './utils/helper';
 
 export default class KeyBoard {
   constructor(rowsTemplate) {
@@ -36,9 +37,9 @@ export default class KeyBoard {
 
         for (let j = 0; j < this.rowsTemplate[i].length; j += 1) {
           const element = this.rowsTemplate[i][j];
-          this.keyBase.find((el) => {
+          this.keyBase.forEach((el) => {
             if (el.code === element) {
-              row.append(new Key(el, this.isCapsLock).key);
+              row.append(new Key(el).key);
             }
           });
         }
@@ -117,22 +118,10 @@ export default class KeyBoard {
         capsLockBtn.classList.toggle('capslock-active');
       }
 
-      this.letterToUpperCase(this.isCapsLock);
+      letterToUpperCase(this.isCapsLock);
     }
 
     // this.output.focus();
-  }
-
-  letterToUpperCase(isTrue) {
-    const lowerLetters = document.querySelectorAll('.letter');
-    lowerLetters.forEach((letter) => {
-      const tmp = letter.textContent;
-      if (isTrue) {
-        letter.textContent = tmp.toUpperCase();
-      } else {
-        letter.textContent = tmp.toLowerCase();
-      }
-    });
   }
 
   handleOnKeyDown(e) {
@@ -145,24 +134,21 @@ export default class KeyBoard {
     }
 
     if (this.isCapsLock) {
-      this.letterToUpperCase(true);
+      letterToUpperCase(true);
     } else {
-      this.letterToUpperCase(false);
+      letterToUpperCase(false);
     }
   }
 
   handleOnKeyUp() {
+    console.log(this);
     // this.frame = document.querySelector('.frame');
     // let activeBtn = this.frame.querySelector(`*[data-code="${e.keyCode}"]`);
     // activeBtn.classList.remove('active');
   }
 
   handleOnMouseDown(e) {
-    // let output = document.querySelector('.textarea');
-    // this.output.setSelectionRange(end, end);
-    // console.log(e.target);
     this.output.focus();
-    // e.target.classList.add('active');
 
     if (this.fireKeyCodes.includes(e.target.dataset.code)) {
       this.fireKeys(e.target);
