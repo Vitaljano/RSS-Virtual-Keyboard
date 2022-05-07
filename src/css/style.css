@@ -41,6 +41,14 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.key .main {
+  order:2
+}
+
+.key .sub {
+  order:1
+}
 .active {
   position: relative;
   bottom: -2px;
