@@ -10,7 +10,7 @@ export default class KeyBoard {
     this.keyLang = 'en';
     this.rowsTemplate = rowsTemplate;
     this.output = null;
-    this.fireKeyCodes = ['Backspace', 'Delete', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'CapsLock', 'Space'];
+    this.fireKeyCodes = ['Backspace', 'Delete', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'CapsLock', 'Space', 'Enter'];
     this.changeableKeys = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Backquote', 'Minus', 'Equal', 'BracketLeft', 'BracketRight', 'Semicolon', 'Quote', 'Backslash', 'IntlBackslash', 'Comma', 'Period', 'Slash'];
     this.isCapsLock = false;
     this.altCtrl = false;
@@ -127,6 +127,10 @@ export default class KeyBoard {
       letterToUpperCase(this.isCapsLock);
     }
 
+    if (keyCode === 'Enter') {
+      this.output.value = `${left}\n${right}`;
+      cursorPosition += 1;
+    }
     // this.output.focus();
   }
 
@@ -167,7 +171,7 @@ export default class KeyBoard {
       this.altCtrl = false;
     }
 
-    if (e.code === 'ShiftLeft') {
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
       this.isShiftPressed = true;
       this.shiftPress(true);
     }
@@ -177,7 +181,7 @@ export default class KeyBoard {
     const activeKey = document.querySelector(`*[data-code=${e.code}]`);
     activeKey.classList.remove('active');
 
-    if (e.code === 'ShiftLeft') {
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
       this.shiftPress(false);
       this.isShiftPressed = false;
     }
@@ -205,7 +209,7 @@ export default class KeyBoard {
       this.changeableKeyWrite(e.currentTarget);
     }
 
-    if (e.target.dataset.code === 'ShiftLeft') {
+    if (e.target.dataset.code === 'ShiftLeft' || e.target.dataset.code === 'ShiftRight') {
       this.shiftPress(true);
     }
   }
@@ -216,7 +220,7 @@ export default class KeyBoard {
     }
     // e.target.classList.remove('active');
 
-    if (e.target.dataset.code === 'ShiftLeft') {
+    if (e.target.dataset.code === 'ShiftLeft' || e.target.dataset.code === 'ShiftRight') {
       this.shiftPress(false);
     }
 
