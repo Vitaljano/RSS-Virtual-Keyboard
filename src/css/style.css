@@ -10,6 +10,7 @@
 
 body {
   background-color: var(--sceneColor);
+
 }
 .textarea-wrapper {
   display: flex;
@@ -27,6 +28,7 @@ body {
   background-color: #f7b5cb;
 }
 .key {
+  box-sizing: border-box;
   cursor: pointer;
   font-family: Legends;
   font-weight: 700;
@@ -43,11 +45,16 @@ body {
 }
 
 .key .main {
-  order:2
+  order:2;
+  text-align: center;
 }
 
 .key .sub {
-  order:1
+  order:1;
+  padding-left: 5px;
+}
+.letter {
+  padding: 5px;
 }
 .active {
   position: relative;
@@ -91,7 +98,7 @@ body {
 }
 
 .backspace {
-  width: 10%;
+  width: 9%;
   /* grid-column: span 2; */
 }
 
@@ -114,7 +121,7 @@ body {
 }
 
 .shiftleft {
-  width: 11%;
+  width: 12%;
   /* grid-column: span 2; */
   background-color: var(--accent);
 }
@@ -124,6 +131,10 @@ body {
 .space {
   width: 50%;
   grid-column: span 7;
+}
+
+.delete{
+  width: 7%;
 }
 
 .arrowdown,

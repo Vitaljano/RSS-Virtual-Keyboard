@@ -23,7 +23,7 @@ const controlButtons = [
 export default class Key {
   constructor({
     small, shift, code, keycode,
-  }) {
+  }, handlers) {
     this.small = small;
     this.shift = shift;
     this.code = code;
@@ -35,18 +35,25 @@ export default class Key {
       className += ` ${this.code.toLowerCase()}`;
       className += ' control-key';
     }
-    // console.log(this.shift);
+
     if (shift && !code.includes('Key')) {
       const children = [];
       children.push(create('span', this.shift, 'sub'));
       children.push(create('span', this.small, 'main'));
       this.key = create('div', '', className, ['data-code', this.code]);
+      this.key.addEventListener('mousedown', handlers.handleOnMouseDown);
+      this.key.addEventListener('mouseup', handlers.handleOnMouseUp);
+
       this.key.append(...children);
     } else if (code.includes('Key')) {
       className += ' letter';
       this.key = create('div', this.small, className, ['data-code', this.code]);
+      this.key.addEventListener('mousedown', handlers.handleOnMouseDown);
+      this.key.addEventListener('mouseup', handlers.handleOnMouseUp);
     } else {
       this.key = create('button', this.small, className, ['data-code', this.code]);
+      this.key.addEventListener('mousedown', handlers.handleOnMouseDown);
+      this.key.addEventListener('mouseup', handlers.handleOnMouseUp);
     }
   }
 }

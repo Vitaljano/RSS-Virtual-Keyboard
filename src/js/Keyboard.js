@@ -7,12 +7,13 @@ export default class KeyBoard {
   constructor(rowsTemplate) {
     this.keys = null;
     this.keyBoard = null;
+    this.keyLang = 'en';
     this.rowsTemplate = rowsTemplate;
     this.output = null;
     this.fireKeyCodes = ['Backspace', 'Delete', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'CapsLock', 'Space'];
     this.changeableKeys = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Backquote', 'Minus', 'Equal', 'BracketLeft', 'BracketRight', 'Semicolon', 'Quote', 'Backslash', 'IntlBackslash', 'Comma', 'Period', 'Slash'];
     this.isCapsLock = false;
-    this.altShift = false;
+    this.altCtrl = false;
     this.isShiftPressed = false;
   }
 
@@ -42,7 +43,7 @@ export default class KeyBoard {
           const element = this.rowsTemplate[i][j];
           this.keyBase.forEach((el) => {
             if (el.code === element) {
-              row.append(new Key(el).key);
+              row.append(new Key(el, this.handlers).key);
             }
           });
         }
@@ -57,10 +58,10 @@ export default class KeyBoard {
   init(lang) {
     this.keyBase = language[lang];
     this.generateTextarea();
+    this.generateEvents();
 
     this.generateKeys();
     this.generateKeyBoard();
-    this.generateEvents();
 
     this.letterKeys();
     this.output = document.querySelector('.textarea');
@@ -68,10 +69,12 @@ export default class KeyBoard {
   }
 
   generateEvents() {
+    this.handlers = {
+      handleOnMouseDown: this.handleOnMouseDown.bind(this),
+      handleOnMouseUp: this.handleOnMouseUp.bind(this),
+    };
     document.onkeydown = this.handleOnKeyDown.bind(this);
     document.onkeyup = this.handleOnKeyUp.bind(this);
-    document.onmousedown = this.handleOnMouseDown.bind(this);
-    document.onmouseup = this.handleOnMouseUp.bind(this);
   }
 
   fireKeys(key) {
@@ -128,65 +131,92 @@ export default class KeyBoard {
   }
 
   handleOnKeyDown(e) {
-    this.isCapsLock = e.getModifierState('CapsLock');
-    const capsLockBtn = document.querySelector('.capslock');
-    console.log(this.isCapsLock);
+    const activeKey = document.querySelector(`*[data-code=${e.code}]`);
+    activeKey.classList.add('active');
 
-    if (this.isCapsLock) {
-      capsLockBtn.classList.toggle('capslock-active');
+    if (e.code === 'CapsLock') {
+      const capsLockBtn = document.querySelector('.capslock');
+      this.isCapsLock = e.getModifierState('CapsLock');
+
+      if (this.isCapsLock) {
+        letterToUpperCase(true);
+        capsLockBtn.classList.toggle('capslock-active');
+      } else {
+        letterToUpperCase(false);
+        capsLockBtn.classList.toggle('capslock-active');
+      }
     }
 
-    if (this.isCapsLock) {
-      letterToUpperCase(true);
-    } else {
-      letterToUpperCase(false);
+    if (e.code === 'Tab') {
+      e.preventDefault();
+      this.output.value += '\t';
     }
 
     if (e.code === 'AltLeft') {
-      this.altShift = true;
-      if (e.code === 'CtrlLeft' && this.altShift) {
+      this.altCtrl = true;
+    }
+
+    if (e.code === 'ControlLeft' && this.altCtrl) {
+      if (this.keyLang === 'en') {
         this.changeLanguage('ru');
+        this.keyLang = 'ru';
+      } else {
+        this.changeLanguage('en');
+        this.keyLang = 'en';
       }
+      this.altCtrl = false;
     }
 
     if (e.code === 'ShiftLeft') {
       this.isShiftPressed = true;
       this.shiftPress(true);
-      // this.isShiftPressed = false;
     }
   }
 
   handleOnKeyUp(e) {
+    const activeKey = document.querySelector(`*[data-code=${e.code}]`);
+    activeKey.classList.remove('active');
+
     if (e.code === 'ShiftLeft') {
-      // this.isShiftPressed = ;
       this.shiftPress(false);
       this.isShiftPressed = false;
-      // letterToUpperCase(false);
     }
   }
 
   handleOnMouseDown(e) {
+    e.preventDefault();
     this.output.focus();
+    if (e.target.dataset.code === 'CapsLock') {
+      const capsLockBtn = document.querySelector('.capslock');
+      if (this.isCapsLock) {
+        capsLockBtn.classList.toggle('capslock-active');
+      }
+    }
+
+    if (e.currentTarget) {
+      this.addActiveClass(e.currentTarget);
+    }
 
     if (this.fireKeyCodes.includes(e.target.dataset.code)) {
       this.fireKeys(e.target);
     }
 
-    if (this.changeableKeys.includes(e.target.dataset.code)) {
-      this.changeableKeyWrite(e.target);
+    if (this.changeableKeys.includes(e.currentTarget.dataset.code)) {
+      this.changeableKeyWrite(e.currentTarget);
     }
 
     if (e.target.dataset.code === 'ShiftLeft') {
-      // this.isShiftPressed = true;
       this.shiftPress(true);
     }
   }
 
   handleOnMouseUp(e) {
-    e.target.classList.remove('active');
+    if (e.currentTarget) {
+      this.addActiveClass(e.currentTarget);
+    }
+    // e.target.classList.remove('active');
 
     if (e.target.dataset.code === 'ShiftLeft') {
-      // this.isShiftPressed = false;
       this.shiftPress(false);
     }
 
@@ -212,7 +242,13 @@ export default class KeyBoard {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of row) {
         this.keyBase.map((el) => {
-          if (el.code === item.dataset.code) {
+          if (this.changeableKeys.includes(el.code)) {
+            const changeableKey = document.querySelector(`*[data-code=${el.code}]`);
+            const main = changeableKey.querySelector('.main');
+            const sub = changeableKey.querySelector('.sub');
+            main.textContent = el.small;
+            sub.textContent = el.shift;
+          } else if (el.code === item.dataset.code) {
             item.textContent = el.small;
           }
           return null;
@@ -244,5 +280,10 @@ export default class KeyBoard {
         letterToUpperCase(false);
       }
     });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  addActiveClass(el) {
+    el.classList.toggle('active');
   }
 }
