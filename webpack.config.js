@@ -7,6 +7,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/RSS-Virtual-Keyboard/',
     clean: true,
   },
   mode: 'development',
