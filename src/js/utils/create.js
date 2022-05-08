@@ -13,6 +13,6 @@ export default function create(tag, text, className, ...dataAtr) {
       element.setAttribute(atr, atrValue);
     });
   }
-  element.textContent = text;
+  element.innerHTML = text;
   return element;
 }

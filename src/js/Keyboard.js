@@ -19,8 +19,10 @@ export default class KeyBoard {
 
   generateTextarea() {
     const textareaWrapper = create('div', '', 'textarea-wrapper');
+    const monitorBtn = create('div', '', 'monitor-btn');
     const textarea = create('textarea', '', 'textarea', ['placeholder', 'enter']);
     textareaWrapper.append(textarea);
+    textareaWrapper.append(monitorBtn);
     document.body.append(textareaWrapper);
     this.output = document.querySelector('.textarea');
   }
@@ -253,7 +255,7 @@ export default class KeyBoard {
             main.textContent = el.small;
             sub.textContent = el.shift;
           } else if (el.code === item.dataset.code) {
-            item.textContent = el.small;
+            item.innerHTML = el.small;
           }
           return null;
         });
