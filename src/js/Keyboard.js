@@ -190,7 +190,7 @@ export default class KeyBoard {
       this.shiftPress(true);
     }
 
-    if (e.code === 'ControlRight') {
+    if (e.code === 'ControlRight' || e.code === 'ControlLeft') {
       this.deleteCtrl = true;
       console.log('ctrl');
     }
@@ -304,6 +304,9 @@ export default class KeyBoard {
       if (isShiftPressed) {
         letterToUpperCase(true);
       } else {
+        if (this.isCapsLock) {
+          return;
+        }
         letterToUpperCase(false);
       }
     });
