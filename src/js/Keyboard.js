@@ -97,7 +97,7 @@ export default class KeyBoard {
     if (keyCode === 'Delete') {
       this.output.value = `${left}${right.slice(1)}`;
     }
-    // TODO: Implement arrow key
+
     if (keyCode === 'ArrowLeft') {
       cursorPosition = cursorPosition - 1 >= 0 ? cursorPosition - 1 : 0;
     }
@@ -133,6 +133,9 @@ export default class KeyBoard {
       this.output.value = `${left}\n${right}`;
       cursorPosition += 1;
     }
+
+    this.output.setSelectionRange(cursorPosition, cursorPosition);
+
     // this.output.focus();
   }
 
