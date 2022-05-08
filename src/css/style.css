@@ -58,6 +58,12 @@ body {
 	background: #ddd;
 	border-radius: 50%;
 	box-shadow: 0 0 3px 0 white;
+  cursor: pointer;
+  padding: 1px;
+}
+
+.monitor-btn-active{
+	background: red;
 }
 
 @media all and (min-width: 960px) {

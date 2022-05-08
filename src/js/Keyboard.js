@@ -2,12 +2,14 @@ import create from './utils/create';
 import Key from './Key';
 import language from './layouts/index';
 import letterToUpperCase from './utils/helper';
+import storage from './utils/storage';
+import placeholderText from './layouts/placeholder.txt';
 
 export default class KeyBoard {
   constructor(rowsTemplate) {
     this.keys = null;
     this.keyBoard = null;
-    this.keyLang = 'en';
+    // this.keyLang = 'en';
     this.rowsTemplate = rowsTemplate;
     this.output = null;
     this.fireKeyCodes = ['Backspace', 'Delete', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'CapsLock', 'Space', 'Enter'];
@@ -15,12 +17,22 @@ export default class KeyBoard {
     this.isCapsLock = false;
     this.altCtrl = false;
     this.isShiftPressed = false;
+    this.deleteCtrl = false;
   }
 
   generateTextarea() {
     const textareaWrapper = create('div', '', 'textarea-wrapper');
     const monitorBtn = create('div', '', 'monitor-btn');
     const textarea = create('textarea', '', 'textarea', ['placeholder', 'enter']);
+    const savedText = storage.get('text');
+
+    if (savedText) {
+      textarea.value = savedText;
+      monitorBtn.classList.add('monitor-btn-active');
+    } else {
+      textarea.value = placeholderText;
+    }
+
     textareaWrapper.append(textarea);
     textareaWrapper.append(monitorBtn);
     document.body.append(textareaWrapper);
@@ -66,8 +78,11 @@ export default class KeyBoard {
     this.generateKeyBoard();
 
     this.letterKeys();
+    this.saveBtn = document.querySelector('.monitor-btn');
     this.output = document.querySelector('.textarea');
     this.frame = document.querySelector('.frame');
+
+    this.saveBtn.addEventListener('click', this.saveToLocalStorage);
   }
 
   generateEvents() {
@@ -120,13 +135,16 @@ export default class KeyBoard {
     }
     if (keyCode === 'CapsLock') {
       this.isCapsLock = !this.isCapsLock;
+      // console.log(key);
 
       const capsLockBtn = document.querySelector('.capslock');
       if (this.isCapsLock) {
         capsLockBtn.classList.toggle('capslock-active');
+        letterToUpperCase(this.isCapsLock);
+      } else {
+        capsLockBtn.classList.toggle('capslock-active');
+        letterToUpperCase(this.isCapsLock);
       }
-
-      letterToUpperCase(this.isCapsLock);
     }
 
     if (keyCode === 'Enter') {
@@ -144,16 +162,7 @@ export default class KeyBoard {
     activeKey.classList.add('active');
 
     if (e.code === 'CapsLock') {
-      const capsLockBtn = document.querySelector('.capslock');
-      this.isCapsLock = e.getModifierState('CapsLock');
-
-      if (this.isCapsLock) {
-        letterToUpperCase(true);
-        capsLockBtn.classList.toggle('capslock-active');
-      } else {
-        letterToUpperCase(false);
-        capsLockBtn.classList.toggle('capslock-active');
-      }
+      this.fireKeys(activeKey);
     }
 
     if (e.code === 'Tab') {
@@ -161,11 +170,11 @@ export default class KeyBoard {
       this.output.value += '\t';
     }
 
-    if (e.code === 'AltLeft') {
+    if (e.code === 'AltLeft' || e.code === 'AltRight') {
       this.altCtrl = true;
     }
 
-    if (e.code === 'ControlLeft' && this.altCtrl) {
+    if ((e.code === 'ControlLeft' || e.code === 'AltRight') && this.altCtrl) {
       if (this.keyLang === 'en') {
         this.changeLanguage('ru');
         this.keyLang = 'ru';
@@ -179,6 +188,20 @@ export default class KeyBoard {
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
       this.isShiftPressed = true;
       this.shiftPress(true);
+    }
+
+    if (e.code === 'ControlRight') {
+      this.deleteCtrl = true;
+      console.log('ctrl');
+    }
+
+    if (e.code === 'Delete' && this.deleteCtrl) {
+      const statusBtn = document.querySelector('.monitor-btn');
+      const textarea = document.querySelector('.textarea');
+      textarea.value = '';
+      statusBtn.classList.remove('monitor-btn-active');
+      storage.del();
+      this.deleteCtrl = false;
     }
   }
 
@@ -195,23 +218,18 @@ export default class KeyBoard {
   handleOnMouseDown(e) {
     e.preventDefault();
     this.output.focus();
-    if (e.target.dataset.code === 'CapsLock') {
-      const capsLockBtn = document.querySelector('.capslock');
-      if (this.isCapsLock) {
-        capsLockBtn.classList.toggle('capslock-active');
-      }
-    }
+    const activeKey = document.querySelector(`*[data-code=${e.currentTarget.dataset.code}]`);
 
     if (e.currentTarget) {
       this.addActiveClass(e.currentTarget);
     }
 
     if (this.fireKeyCodes.includes(e.target.dataset.code)) {
-      this.fireKeys(e.target);
+      this.fireKeys(activeKey);
     }
 
     if (this.changeableKeys.includes(e.currentTarget.dataset.code)) {
-      this.changeableKeyWrite(e.currentTarget);
+      this.changeableKeyWrite(activeKey);
     }
 
     if (e.target.dataset.code === 'ShiftLeft' || e.target.dataset.code === 'ShiftRight') {
@@ -223,7 +241,6 @@ export default class KeyBoard {
     if (e.currentTarget) {
       this.addActiveClass(e.currentTarget);
     }
-    // e.target.classList.remove('active');
 
     if (e.target.dataset.code === 'ShiftLeft' || e.target.dataset.code === 'ShiftRight') {
       this.shiftPress(false);
@@ -243,6 +260,7 @@ export default class KeyBoard {
   }
 
   changeLanguage(lang) {
+    storage.set('lang', lang);
     this.keyBase = language[lang];
     const rows = document.querySelectorAll('.row');
 
@@ -294,5 +312,14 @@ export default class KeyBoard {
   // eslint-disable-next-line class-methods-use-this
   addActiveClass(el) {
     el.classList.toggle('active');
+  }
+
+  saveToLocalStorage() {
+    const output = document.querySelector('.textarea').value;
+    if (!output) {
+      return;
+    }
+    this.classList.add('monitor-btn-active');
+    storage.set('text', output);
   }
 }

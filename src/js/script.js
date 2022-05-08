@@ -1,4 +1,5 @@
 import Keyboard from './Keyboard';
+import storage from './utils/storage';
 
 const keyRow = [
   [
@@ -67,5 +68,6 @@ const keyRow = [
   ],
   ['ControlLeft', 'Win', 'AltLeft', 'Space', 'AltRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ControlRight'],
 ];
+const lang = storage.get('lang') || 'en';
 
-new Keyboard(keyRow).init('en');
+new Keyboard(keyRow, lang).init(lang);

@@ -1,0 +1,9 @@
+Hello Reviewer!
+There is some tips how use this app.
+1. This  app is written in linux ubuntu OS.
+2. To change language hot key ctrl + alt.
+3. You can save your written text to click white button bellow.
+4. Hot key to delete text from local storage ctrl + delete.
+5. Shift button changes keyboard layout.
+
+Thank You for Your review.
