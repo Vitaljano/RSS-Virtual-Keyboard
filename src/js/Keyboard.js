@@ -135,7 +135,6 @@ export default class KeyBoard {
     }
     if (keyCode === 'CapsLock') {
       this.isCapsLock = !this.isCapsLock;
-      // console.log(key);
 
       const capsLockBtn = document.querySelector('.capslock');
       if (this.isCapsLock) {
@@ -192,7 +191,6 @@ export default class KeyBoard {
 
     if (e.code === 'ControlRight' || e.code === 'ControlLeft') {
       this.deleteCtrl = true;
-      console.log('ctrl');
     }
 
     if (e.code === 'Delete' && this.deleteCtrl) {
