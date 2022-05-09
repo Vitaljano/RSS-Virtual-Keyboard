@@ -158,7 +158,10 @@ export default class KeyBoard {
 
   handleOnKeyDown(e) {
     const activeKey = document.querySelector(`*[data-code=${e.code}]`);
-    activeKey.classList.add('active');
+
+    if (activeKey) {
+      activeKey.classList.add('active');
+    }
 
     if (e.code === 'CapsLock') {
       this.fireKeys(activeKey);
@@ -205,7 +208,10 @@ export default class KeyBoard {
 
   handleOnKeyUp(e) {
     const activeKey = document.querySelector(`*[data-code=${e.code}]`);
-    activeKey.classList.remove('active');
+
+    if (activeKey) {
+      activeKey.classList.remove('active');
+    }
 
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
       this.shiftPress(false);
